@@ -11,7 +11,7 @@ let add_transaction (reg : register) (new_tran : transaction) : register =
 
 
 
-  
+
 (* number of block, nounce, list of transactions, previous block's hash, hash *)
 type hashcode = string
 type block = int * int * register * hashcode * hashcode
@@ -49,7 +49,6 @@ let check_hash hash =
       else
         false
     in aux 0
-
 
 (* finds the value of nounce the given block should have *)
 let find_nounce (block : block) =
@@ -120,7 +119,7 @@ let attach_block (prev_block : block) (new_block : block) : block =
 let push_back (block : block) (chain : blockchain) : blockchain =
   let ls = fst chain in
   match ls with
-  | [] -> (block :: [], 1)
+  | []     -> (block :: [], 1)
   | h :: t ->
     let modified_block = attach_block h block in
     (modified_block :: ls, snd chain + 1)
@@ -129,8 +128,9 @@ let push_back (block : block) (chain : blockchain) : blockchain =
 let is_chain_correct (chain : blockchain) =
   let rec aux ls =
     match ls with
+    | []      -> true
     | h :: [] -> true
-    | h :: t ->
+    | h :: t  ->
       if not (check_hash (get_hash h)) then
         false
       else
@@ -139,7 +139,6 @@ let is_chain_correct (chain : blockchain) =
           false
         else
           aux t
-    | [] -> true
   in aux (fst chain)
 
 
