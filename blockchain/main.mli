@@ -25,8 +25,8 @@ val empty_chain : blockchain
 val push_back : block -> blockchain -> blockchain
 (* examines if a blockchain consists of correctly attached blocks *)
 val is_chain_correct : blockchain -> bool
-(* returns the n-th block in a blockchain *)
-val get_nth_block : blockchain -> int -> block
 (* returns a blockchain's size -- the number of blocks
    it consists of *)
 val chain_length : blockchain -> int
+(* returns the n-th block in a blockchain *)
+val get_nth_block : blockchain -> int -> block
