@@ -9,10 +9,12 @@ let empty_register : register = ([], 0)
 let add_transaction (reg : register) (new_tran : transaction) : register =
   (new_tran :: (fst reg), snd reg + 1)
 
+
+
+  
 (* number of block, nounce, list of transactions, previous block's hash, hash *)
 type hashcode = string
 type block = int * int * register * hashcode * hashcode
-type blockchain = block list * int
 
 (* just some substitute for the actual function until I figure out
    how to get it in ocaml *)
@@ -100,6 +102,10 @@ let add_transaction_to_block (block : block) (new_tran : transaction) : block =
   let new_reg = add_transaction (get_reg block) new_tran in
   set_reg block new_reg
 
+
+
+type blockchain = block list * int 
+
 (* new, empty blockchain *)
 let empty_chain : blockchain = ([], 0)
 
@@ -150,4 +156,5 @@ let get_nth_block (chain : blockchain) (num_of_block : int) : block =
         aux (num - 1) (List.tl ls)
     in aux chain_length (fst chain)
 
+(* returns a blockchain's length *)
 let chain_length (chain : blockchain) : int = snd chain
