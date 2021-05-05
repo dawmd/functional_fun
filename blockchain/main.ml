@@ -1,18 +1,22 @@
-(* person A, person B, the amount of money person A transfers to person B *)
-type transaction = string * string * int
-type register = transaction list * int
+(* just some substitute for the actual function until I figure out
+   how to get it in ocaml *)
+let sha256 x : hashcode = "0000000000000000"
+
+type transaction_data = string * string * int
+type transaction = { data : transaction_data; hash : hashcode }
+type register = { txs : transaction list; length : int }
+type hashcode = string
 
 (* new, empty register *)
-let empty_register : register = ([], 0)
+let empty_register : register = { txs = []; length = 0}
 
 (* adds a new transaction to a register *)
 let add_transaction (reg : register) (new_tran : transaction) : register =
-  (new_tran :: (fst reg), snd reg + 1)
+  { txs = new_tran :: reg.txs; length = reg.length + 1 }
 
 
 
-(* number of block, nounce, list of transactions, previous block's hash, hash *)
-type hashcode = string
+(* number of block, nonce, list of transactions, previous block's hash, hash *)
 type blockdata = {
   num_of_block : int;
   nonce : int;
@@ -20,10 +24,6 @@ type blockdata = {
   prev_hash : hashcode option
 }
 type block = blockdata * hashcode
-
-(* just some substitute for the actual function until I figure out
-   how to get it in ocaml *)
-let sha256 x = "0000000000000000"
 
 let set_num (block : block) (new_num : int) : block =
   let new_data = {(fst block) with num_of_block = new_num} in
@@ -87,44 +87,6 @@ let check_hash hash =
       else
         false
     in aux 0
-
-(*
-let is_chain_correct (chain : blockchain) =
-  if is_chain_empty chain then true else
-  let rec aux ls =
-    let head = List.hd ls
-    and tail = List.tl ls in
-    if not (check_hash (snd head)) then
-      false
-    else
-      let next_head = List.hd tail in
-      match (fst head).prev_hash with
-      | None -> if tail = [] then true else false
-      | Some hash ->
-        if hash <> snd next_head then
-          false
-        else
-          aux tail in
-  aux chain.blocks
-
-
-let is_chain_correct (chain : blockchain) =
-  if is_chain_empty chain then true else
-  let rec aux ls curr_num =
-    let head = List.hd ls in
-    if (fst head).num_of_block <> curr_num || not (check_hash (snd head)) then
-      false
-    else match List.tl ls with
-    | [] -> (fst head).prev_hash = None
-    | next_head :: t ->
-
-
-
-      let prev_hash = snd (List.hd t) in
-      match 
-
-  aux chain.blocks (chain.length + default_num - 1)
-*)
 
 type blockchain = { blocks : block list; length : int }
 
@@ -204,3 +166,26 @@ let get_nth_block (chain : blockchain) (num_of_block : int) : block option =
       else
         aux (curr_num - 1) (List.tl ls) in
     aux (chain.length + default_num - 1) chain.blocks
+
+let is_chain_correct (chain : blockchain) : bool =
+  let blocklist = chain.blocks
+  and length = chain.length in
+  let rec aux ls curr_num =
+    match ls with
+    | (data, hash) :: [] ->
+      if data.num_of_block <> curr_num then
+        false
+      else if data.prev_hash <> None then
+        false
+      else
+        check_block_hash (data, hash)
+    | (data, hash) :: t ->
+      if data.num_of_block <> curr_num then
+        false
+      else if data.prev_hash = Some (snd (List.hd t)) then
+        false
+      else if check_block_hash (data, hash) then
+        aux t (curr_num - 1)
+      else false
+    | _ -> assert false in
+  aux blocklist (length + default_num - 1)
