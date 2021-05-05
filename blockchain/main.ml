@@ -1,3 +1,5 @@
+type hashcode = string
+
 (* just some substitute for the actual function until I figure out
    how to get it in ocaml *)
 let sha256 x : hashcode = "0000000000000000"
@@ -5,7 +7,6 @@ let sha256 x : hashcode = "0000000000000000"
 type transaction_data = string * string * int
 type transaction = { data : transaction_data; hash : hashcode }
 type register = { txs : transaction list; length : int }
-type hashcode = string
 
 (* new, empty register *)
 let empty_register : register = { txs = []; length = 0}
@@ -65,28 +66,6 @@ let add_transaction_to_block (block : block) (new_tran : transaction) : block =
   let new_reg = add_transaction (fst block).reg new_tran in
   set_reg block new_reg
 
-
-
-type blockchain = {blocks : block list; length : int}
-
-let empty_chain : blockchain = {blocks = []; length = 0}
-
-(* the number of zeroes at the beginning of a "good" hashcode *)
-let num_of_zeros = 4
-
-(* examines if the given hash is "good" *)
-let check_hash hash =
-  if String.length hash < num_of_zeros then
-    false
-  else
-    let rec aux index =
-      if index >= num_of_zeros then
-        true
-      else if String.get hash index = '0' then
-        aux (index + 1)
-      else
-        false
-    in aux 0
 
 type blockchain = { blocks : block list; length : int }
 
