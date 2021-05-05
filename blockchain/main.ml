@@ -162,9 +162,14 @@ let append_block (block : block) (chain : blockchain) : blockchain option =
   else
     let fst_block = List.hd chain.blocks in
     if check_block_hash block
-    && (fst block).num_of_block = (fst fst_block).num_of_block + 1
-    && snd fst_block = (fst block).prev_hash then
-      Some { blocks = block :: chain.blocks; length = chain.length + 1 }
+    && (fst block).num_of_block = (fst fst_block).num_of_block + 1 then
+      match (fst block).prev_hash with
+      | None -> None
+      | Some hash ->
+        if hash = snd fst_block then
+          Some { blocks = block :: chain.blocks; length = chain.length + 1 }
+        else
+          None
     else
       None
 
@@ -190,12 +195,12 @@ let mine (chain : blockchain) (block : block) =
   (new_block, sha256 new_block)
 
 let get_nth_block (chain : blockchain) (num_of_block : int) : block option =
-  if chain_length chain + default_num - 1 < num_of_block || num_of_block < default_num then
+  if chain.length + default_num - 1 < num_of_block || num_of_block < default_num then
     None
   else
     let rec aux curr_num ls =
-      if num = curr_num then
+      if num_of_block = curr_num then
         Some (List.hd ls)
       else
-        aux (num - 1) (List.tl ls) in
-    aux ((chain_length chain) + default_num - 1) chain.blocks
+        aux (curr_num - 1) (List.tl ls) in
+    aux (chain.length + default_num - 1) chain.blocks
