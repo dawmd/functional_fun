@@ -210,5 +210,6 @@ let is_chain_correct (chain : blockchain) : bool =
     | _ -> assert false in
   aux blocklist (length + default_num - 1)
 
+(* returns a blockchain's length *)
 let chain_length (chain : blockchain) : int = chain.length
   
