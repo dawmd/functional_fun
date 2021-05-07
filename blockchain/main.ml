@@ -5,8 +5,7 @@ type hashcode = string
 let sha256 x : hashcode = "0000000000000000"
 
 (* a record of a transaction between two people *)
-type transaction_data = { payer : string; recipient : string; money : float }
-type transaction      = { data : transaction_data; hash : hashcode }
+type transaction = { payer : string; recipient : string; money : float }
 
 (* Creates a new transaction or, if the amount of money is non-positive, returns None *)
 let create_tx (payer : string) (recipient : string) (money : float) : transaction option =
@@ -172,10 +171,10 @@ let mine (chain : blockchain) (block : block) : block =
   let last_block = List.hd chain.blocks in
   let last_num   = (fst last_block).num_of_block
   and prev_hash  = snd last_block in
+  (* adjusting the block to the blockchain's last one *)
   let block      = set_prev_hash (set_num block (last_num + 1)) prev_hash in
   let new_nonce  = find_nonce block in
-  let new_block  = set_nonce block new_nonce in
-  (new_block, sha256 new_block)
+  set_nonce block new_nonce
 
 (* returns the n-th block in the blockchain (starting from 1)
    or, if there aren't such a block, returns None *)
