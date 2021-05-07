@@ -5,11 +5,11 @@ type hashcode = string
 let sha256 x : hashcode = "0000000000000000"
 
 type transaction_data = string * string * int
-type transaction = { data : transaction_data; hash : hashcode }
-type register = { txs : transaction list; length : int }
+type transaction      = { data : transaction_data; hash : hashcode }
+type register         = { txs : transaction list; length : int }
 
 (* new, empty register *)
-let empty_register : register = { txs = []; length = 0}
+let empty_register : register = { txs = []; length = 0 }
 
 (* adds a new transaction to a register *)
 let add_transaction (reg : register) (new_tran : transaction) : register =
@@ -20,9 +20,9 @@ let add_transaction (reg : register) (new_tran : transaction) : register =
 (* number of block, nonce, list of transactions, previous block's hash, hash *)
 type blockdata = {
   num_of_block : int;
-  nonce : int;
-  reg : register;
-  prev_hash : hashcode option
+  nonce        : int;
+  reg          : register;
+  prev_hash    : hashcode option
 }
 type block = blockdata * hashcode
 
@@ -105,7 +105,7 @@ let append_block (block : block) (chain : blockchain) : blockchain option =
     if check_block_hash block
     && (fst block).num_of_block = (fst fst_block).num_of_block + 1 then
       match (fst block).prev_hash with
-      | None -> None
+      | None      -> None
       | Some hash ->
         if hash = snd fst_block then
           Some { blocks = block :: chain.blocks; length = chain.length + 1 }
@@ -114,7 +114,7 @@ let append_block (block : block) (chain : blockchain) : blockchain option =
     else
       None
 
-(* finds the value of nonce the given block should have *)
+(* finds the value of nonce a given block should have *)
 let find_nonce (block : block) =
   let data = fst block in
   let rec aux curr_nonce =
@@ -128,11 +128,11 @@ let find_nonce (block : block) =
 
 let mine (chain : blockchain) (block : block) =
   let last_block = List.hd chain.blocks in
-  let last_num = (fst last_block).num_of_block
-  and prev_hash = snd last_block in
-  let block = set_prev_hash (set_num block (last_num + 1)) prev_hash in
-  let new_nonce = find_nonce block in
-  let new_block = { (fst block) with nonce = new_nonce } in
+  let last_num   = (fst last_block).num_of_block
+  and prev_hash  = snd last_block in
+  let block      = set_prev_hash (set_num block (last_num + 1)) prev_hash in
+  let new_nonce  = find_nonce block in
+  let new_block  = set_nonce block new_nonce in
   (new_block, sha256 new_block)
 
 let get_nth_block (chain : blockchain) (num_of_block : int) : block option =
@@ -149,6 +149,7 @@ let get_nth_block (chain : blockchain) (num_of_block : int) : block option =
 let is_chain_correct (chain : blockchain) : bool =
   let blocklist = chain.blocks
   and length = chain.length in
+  if blocklist = [] then true else
   let rec aux ls curr_num =
     match ls with
     | (data, hash) :: [] ->
@@ -168,3 +169,6 @@ let is_chain_correct (chain : blockchain) : bool =
       else false
     | _ -> assert false in
   aux blocklist (length + default_num - 1)
+
+
+  
