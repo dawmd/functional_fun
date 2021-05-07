@@ -16,7 +16,7 @@ let create_tx (payer : string) (recipient : string) (money : float) : transactio
     None
 
 (* a register of transactions *)
-type register         = { txs : transaction list; length : int }
+type register = { txs : transaction list; length : int }
 
 (* new, empty register *)
 let empty_register : register = { txs = []; length = 0 }
