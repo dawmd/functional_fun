@@ -1,4 +1,8 @@
 type transaction
+
+(* creates a new transaction between two people *)
+val create_tx : string -> string -> float -> transaction option
+
 type register
 
 (* an empty register of transaction *)

@@ -7,6 +7,14 @@ let sha256 x : hashcode = "0000000000000000"
 (* a record of a transaction between two people *)
 type transaction_data = { payer : string; recipient : string; money : float }
 type transaction      = { data : transaction_data; hash : hashcode }
+
+(* Creates a new transaction or, if the amount of money is non-positive, returns None *)
+let create_tx (payer : string) (recipient : string) (money : float) : transaction option =
+  if money >= 0. then
+    Some { payer = payer; recipient = recipient; money = money }
+  else
+    None
+
 (* a register of transactions *)
 type register         = { txs : transaction list; length : int }
 
